@@ -1,0 +1,87 @@
+// package main
+
+// import (
+// 	"errors"
+// 	"fmt"
+// 	"log"
+// 	"reflect"
+// 	"strings"
+
+// 	"github.com/xuri/excelize/v2"
+// )
+
+// // func Export(headers []string, data []any, filename string) {
+// func Export[T any](data []T, filename string) error {
+// 	log.Println("Exporting spreadsheet...")
+// 	filename = handleFilename(filename)
+
+// 	f := excelize.NewFile()
+// 	sheetIndex, err := f.NewSheet("Sheet1")
+// 	if err != nil {
+// 		log.Println(err)
+// 		return errors.New("failed to create new sheet: " + err.Error())
+// 	}
+
+// 	if err := createHeaders(f, reflect.TypeOf(data[0]), sheetIndex); err != nil {
+// 		log.Println(err)
+// 		return errors.New("failed to handle header: " + err.Error())
+// 	}
+
+// 	reflectType := reflect.TypeOf(data[0])
+// 	fieldCount := reflectType.NumField()
+
+// 	// loop row index
+// 	for row, item := range data {
+// 		rowIndex := row + 2
+
+// 		for field := range fieldCount {
+// 			colIndex := field + 1
+// 			cell, err := excelize.CoordinatesToCellName(colIndex, rowIndex, false)
+// 			if err != nil {
+// 				log.Println(err)
+// 				return errors.New("failed to convert coordinates to cell name: " + err.Error())
+// 			}
+
+// 			sheetName := f.GetSheetName(sheetIndex)
+// 			f.SetCellValue(sheetName, cell, reflect.ValueOf(item).Field(field))
+// 		}
+// 	}
+
+// 	if err := f.SaveAs(filename); err != nil {
+// 		log.Println(err)
+// 		return errors.New("failed to save spreadsheet: " + err.Error())
+// 	}
+
+// 	if err := f.Close(); err != nil {
+// 		log.Println(err)
+// 		return errors.New("failed to close spreadsheet file: " + err.Error())
+// 	}
+
+// 	log.Println("Spreadsheet exported successfully")
+// 	return nil
+// }
+
+// func createHeaders(f *excelize.File, reflectType reflect.Type, sheetIndex int) error {
+// 	fieldCount := reflectType.NumField()
+
+// 	sheetName := f.GetSheetName(sheetIndex) // Assuming the first sheet is used
+// 	for field := range fieldCount {
+// 		colIndex := field + 1
+// 		cell, err := excelize.CoordinatesToCellName(colIndex, 1, false)
+// 		if err != nil {
+// 			log.Println(err)
+// 			return errors.New("failed to convert coordinates to cell name: " + err.Error())
+// 		}
+
+// 		f.SetCellValue(sheetName, cell, reflectType.Field(field).Name)
+// 	}
+
+// 	return nil
+// }
+
+// func handleFilename(filename string) string {
+// 	if !strings.HasSuffix(filename, ".xlsx") {
+// 		filename = fmt.Sprintf("%s.xlsx", filename)
+// 	}
+// 	return filename
+// }
