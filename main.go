@@ -1,11 +1,10 @@
 package main
 
 import (
-	"encoding/csv"
 	"fmt"
-	"log"
-	"os"
+	"scrap/helper"
 	"scrap/model"
+	"time"
 
 	"github.com/gocolly/colly/v2"
 )
@@ -50,42 +49,9 @@ func main() {
 	c.OnScraped(func(r *colly.Response) {
 		fmt.Println(r.Request.URL, " scraped!")
 
-		for _, v := range model.ProductList {
-			v.PrintToScreen()
+		if err := helper.WriteProductsToCSV(model.ProductList, fmt.Sprintf("%d.csv", time.Now().Unix())); err != nil {
+			fmt.Println("Error writing products to CSV:", err)
 		}
-
-		file, err := os.Create("products.csv")
-		if err != nil {
-			log.Fatalln("Failed to create output CSV file", err)
-		}
-		defer file.Close()
-
-		// initialize a file writer
-		writer := csv.NewWriter(file)
-
-		// write the CSV headers
-		headers := []string{
-			"Url",
-			"Image",
-			"Name",
-			"Price",
-		}
-		writer.Write(headers)
-
-		// write each product as a CSV row
-		for _, product := range model.ProductList {
-			// convert a Product to an array of strings
-			record := []string{
-				product.Url,
-				product.Image,
-				product.Name,
-				product.Price,
-			}
-
-			// add a CSV record to the output file
-			writer.Write(record)
-		}
-		defer writer.Flush()
 
 	})
 
